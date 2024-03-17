@@ -27,7 +27,9 @@ pyyaml==6.0.1
 ruff==0.3.3
     # via -r requirements.dev.in
 typing-extensions==4.10.0
-    # via mypy
+    # via
+    #   -c requirements.txt
+    #   mypy
 virtualenv==20.25.1
     # via pre-commit
 

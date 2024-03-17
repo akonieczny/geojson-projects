@@ -21,3 +21,9 @@ Install python requirements
 ```shell
 bash ./scripts/sync_pip.sh
 ```
+
+## Run project
+### Using venv
+```shell
+bash ./infrastructure/start.local.sh
+```
