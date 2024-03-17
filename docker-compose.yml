@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  backend:
+    image: "geojson-projects_backend:latest"
+    networks:
+      - geojson-projects_backend
+    ports:
+      - "127.0.0.1:8000:8000"
+    build:
+      context: .
+      dockerfile: infrastructure/backend.dockerfile
+
+networks:
+  geojson-projects_backend:

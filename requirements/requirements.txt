@@ -12,10 +12,14 @@ click==8.1.7
     # via uvicorn
 fastapi==0.110.0
     # via -r requirements.in
+gunicorn==21.2.0
+    # via -r requirements.in
 h11==0.14.0
     # via uvicorn
 idna==3.6
     # via anyio
+packaging==24.0
+    # via gunicorn
 pydantic==2.6.4
     # via
     #   -r requirements.in
