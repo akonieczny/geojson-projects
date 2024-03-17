@@ -1,0 +1,36 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+lint.select = [
+    "ALL",
+]
+
+lint.ignore = [
+    "D",  # docstrings
+    "ISC001", # may cause conflicts when used with the formatter
+    "COM812", # may cause conflicts when used with the formatter
+]
+
+[tool.mypy]
+python_version = "3.12"
+follow_imports = "normal"
+incremental = true
+ignore_missing_imports = true
+strict_optional = true
+strict_equality = true
+warn_return_any = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+allow_redefinition = false
+disallow_untyped_defs = true
+disallow_any_generics = true
+check_untyped_defs = true
+implicit_reexport = true
+local_partial_types = true
+plugins = []
+exclude = [
+    ".venv",
+]
