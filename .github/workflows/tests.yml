@@ -1,0 +1,92 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths-ignore: [ "adr/**" ]
+
+  push:
+    branches: [ "master" ]
+    paths-ignore: [ "adr/**" ]
+
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.2
+
+      - name: Python set up
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v2.0.0
+
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.2
+
+      - name: Python set up
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: |
+            venv-${{ runner.os }}-pip-${{ hashFiles('requirements/requirements.txt') }}-${{ hashFiles('requirements/requirements.dev.txt') }}
+          restore-keys: |
+            venv-${{ runner.os }}-pip-${{ hashFiles('requirements/requirements.txt') }}-${{ hashFiles('requirements/requirements.dev.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install pip-tools
+          pip-sync requirements/requirements.txt requirements/requirements.dev.txt
+
+      - name: Run mypy
+        run: |
+          source .venv/bin/activate
+          mypy .
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.2
+
+      - name: Python set up
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: |
+            venv-${{ runner.os }}-pip-${{ hashFiles('requirements/requirements.txt') }}-${{ hashFiles('requirements/requirements.dev.txt') }}
+          restore-keys: |
+            venv-${{ runner.os }}-pip-${{ hashFiles('requirements/requirements.txt') }}-${{ hashFiles('requirements/requirements.dev.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install pip-tools
+          pip-sync requirements/requirements.txt requirements/requirements.dev.txt
+
+      - name: Run pytest
+        run: |
+          source .venv/bin/activate
+          pytest .
