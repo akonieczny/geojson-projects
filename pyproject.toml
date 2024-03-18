@@ -7,9 +7,17 @@ lint.select = [
 ]
 
 lint.ignore = [
+    "ANN101",  # self annotation
+    "ANN102",  # cls annotation
+    "COM812", # may cause conflicts when used with the formatter
     "D",  # docstrings
     "ISC001", # may cause conflicts when used with the formatter
-    "COM812", # may cause conflicts when used with the formatter
+    "PTH123", # using open instead of Path.open()
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/test*.py" = [
+    "S", # security checks
 ]
 
 [tool.mypy]

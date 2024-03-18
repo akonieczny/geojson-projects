@@ -12,15 +12,25 @@ filelock==3.13.1
     # via virtualenv
 identify==2.5.35
     # via pre-commit
+iniconfig==2.0.0
+    # via pytest
 mypy==1.9.0
     # via -r requirements.dev.in
 mypy-extensions==1.0.0
     # via mypy
 nodeenv==1.8.0
     # via pre-commit
+packaging==24.0
+    # via
+    #   -c requirements.txt
+    #   pytest
 platformdirs==4.2.0
     # via virtualenv
+pluggy==1.4.0
+    # via pytest
 pre-commit==3.6.2
+    # via -r requirements.dev.in
+pytest==8.1.1
     # via -r requirements.dev.in
 pyyaml==6.0.1
     # via pre-commit

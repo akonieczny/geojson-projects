@@ -1,4 +1,6 @@
 fastapi
+geojson-pydantic
 gunicorn
+httpx
 uvicorn
 pydantic
