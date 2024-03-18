@@ -1,6 +1,10 @@
 -c requirements.txt
 
+factory-boy
 pre-commit
 ruff
+mimesis-factory
 mypy
 pytest
+pytest-postgresql
+sqlalchemy-utils

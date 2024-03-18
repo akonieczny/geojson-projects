@@ -13,11 +13,18 @@ lint.ignore = [
     "D",  # docstrings
     "ISC001", # may cause conflicts when used with the formatter
     "PTH123", # using open instead of Path.open()
+    "PLR0913", # to many arguments in function definition
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**/test*.py" = [
     "S", # security checks
+]
+"**/migrations/env.py" = [
+    "ALL",
+]
+"**/migrations/versions/*.py" = [
+    "INP001",
 ]
 
 [tool.mypy]

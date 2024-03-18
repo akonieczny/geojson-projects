@@ -7,6 +7,8 @@ import pytest
 from fastapi import status
 from starlette.testclient import TestClient
 
+from tests.factories.projects import ProjectFactory
+
 
 @pytest.fixture()
 def request_body(geojson_filename: str) -> dict[str, str]:
@@ -28,6 +30,7 @@ class TestGetAllProject:
         api_client: TestClient,
     ) -> None:
         # given
+        ProjectFactory.create_batch(4)
 
         # when
         response = api_client.get("/projects/")
@@ -45,6 +48,7 @@ class TestGetProjectByPk:
     ) -> None:
         # given
         pk = uuid.uuid4()
+        ProjectFactory.create(pk=pk)
 
         # when
         response = api_client.get(f"/projects/{pk}")
@@ -101,19 +105,20 @@ class TestCreateProject:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.content
 
     @pytest.mark.parametrize(
-        ("geojson_filename", "body_key"),
+        ("geojson_filename", "body_key", "status_code"),
         [
-            ("correct_geojson.json", "name"),
-            ("correct_geojson.json", "description"),
-            ("correct_geojson.json", "start_date"),
-            ("correct_geojson.json", "end_date"),
-            ("correct_geojson.json", "area"),
+            ("correct_geojson.json", "name", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "description", status.HTTP_200_OK),
+            ("correct_geojson.json", "start_date", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "end_date", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "area", status.HTTP_422_UNPROCESSABLE_ENTITY),
         ],
     )
     def test_missing_values_in_body(
         self,
         geojson_filename: str,  # noqa: ARG002
         body_key: str,
+        status_code: int,
         request_body: dict[str, str],
         api_client: TestClient,
     ) -> None:
@@ -124,7 +129,7 @@ class TestCreateProject:
         response = api_client.post("/projects/", json=request_body)
 
         # then
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.content
+        assert response.status_code == status_code, response.content
 
 
 class TestDeleteProject:
@@ -134,6 +139,7 @@ class TestDeleteProject:
     ) -> None:
         # given
         pk = uuid.uuid4()
+        ProjectFactory.create(pk=pk)
 
         # when
         response = api_client.delete(f"/projects/{pk}")
@@ -159,6 +165,7 @@ class TestUpdateProject:
     ) -> None:
         # given
         pk = uuid.uuid4()
+        ProjectFactory.create(pk=pk)
 
         # when
         response = api_client.put(f"/projects/{pk}", json=request_body)
@@ -191,28 +198,31 @@ class TestUpdateProject:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.content
 
     @pytest.mark.parametrize(
-        ("geojson_filename", "body_key"),
+        ("geojson_filename", "body_key", "status_code"),
         [
-            ("correct_geojson.json", "name"),
-            ("correct_geojson.json", "description"),
-            ("correct_geojson.json", "start_date"),
-            ("correct_geojson.json", "end_date"),
-            ("correct_geojson.json", "area"),
+            ("correct_geojson.json", "name", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "description", status.HTTP_200_OK),
+            ("correct_geojson.json", "start_date", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "end_date", status.HTTP_422_UNPROCESSABLE_ENTITY),
+            ("correct_geojson.json", "area", status.HTTP_422_UNPROCESSABLE_ENTITY),
         ],
     )
     def test_missing_values_in_body(
         self,
         geojson_filename: str,  # noqa: ARG002
         body_key: str,
+        status_code: int,
         request_body: dict[str, str],
         api_client: TestClient,
     ) -> None:
         # given
         pk = uuid.uuid4()
+        ProjectFactory.create(pk=pk)
+
         del request_body[body_key]
 
         # when
         response = api_client.put(f"/projects/{pk}", json=request_body)
 
         # then
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.content
+        assert response.status_code == status_code, response.content

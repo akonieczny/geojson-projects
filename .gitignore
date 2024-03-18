@@ -161,6 +161,7 @@ cython_debug/
 #.idea/
 
 # Local env files
+.envs/.local.env
 .ruff_cache
 docker-compose.override.yml
 .pre-commit-config-no-fail-fast.yaml
