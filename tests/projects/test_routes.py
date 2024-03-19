@@ -147,6 +147,9 @@ class TestDeleteProject:
         # then
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.content
 
+        response = api_client.get(f"/projects/{pk}")
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.content
+
 
 class TestUpdateProject:
     @pytest.mark.parametrize(

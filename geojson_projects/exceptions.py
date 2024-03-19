@@ -1,13 +1,14 @@
-import abc
+class BaseError(Exception):
+    message_template: str = "{}"
 
-
-class BaseError(Exception, abc.ABC):
-    pass
+    def __init__(self, *args: str, **kwargs: str) -> None:
+        self.message = self.message_template.format(*args, **kwargs)
+        super().__init__(self.message)
 
 
 class NotFoundError(BaseError):
-    pass
+    message_template = "Not found"
 
 
 class AlreadyExistError(BaseError):
-    pass
+    message_template = "Object with at least one passed fields (which is required as unique) already exist"
