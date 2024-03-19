@@ -1,6 +1,11 @@
+alembic
+envparse
 fastapi
 geojson-pydantic
 gunicorn
 httpx
 uvicorn
 pydantic
+psycopg2-binary
+sqlalchemy
+typing-inspect

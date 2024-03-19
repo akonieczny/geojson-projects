@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 import geojson_pydantic as geojson
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
 from pydantic_core.core_schema import ValidationInfo
 
@@ -11,7 +11,7 @@ AreaPreValidationType = dict[str, str | None] | geojson.Feature | None  # type: 
 
 class ProjectBaseSchema(BaseModel):
     name: str = Field(max_length=32)
-    description: str
+    description: str | None = None
     start_date: datetime
     end_date: datetime
     area: geojson.Feature  # type: ignore[type-arg]
@@ -48,6 +48,8 @@ class ProjectBaseSchema(BaseModel):
 
 class ProjectOutputSchema(ProjectBaseSchema):
     pk: UUID
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProjectCreateSchema(ProjectBaseSchema):

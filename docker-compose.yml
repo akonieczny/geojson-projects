@@ -1,14 +1,37 @@
 version: "3.8"
 services:
   backend:
+    container_name: gp_backend
     image: "geojson-projects_backend:latest"
+    build:
+      context: .
+      dockerfile: infrastructure/backend.dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    env_file:
+      - .envs/.env
     networks:
       - geojson-projects_backend
     ports:
       - "127.0.0.1:8000:8000"
-    build:
-      context: .
-      dockerfile: infrastructure/backend.dockerfile
+
+
+  postgres:
+    container_name: gp_postgres
+    image: postgres:12
+    restart: unless-stopped
+    env_file:
+      - .envs/.env
+    networks:
+      - geojson-projects_backend
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
 networks:
   geojson-projects_backend:
+
+volumes:
+  postgres_data: {}
