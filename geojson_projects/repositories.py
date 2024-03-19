@@ -6,7 +6,7 @@ from typing import Any, Generic, cast
 import typing_inspect
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from geojson_projects.aliases import TFunc, TModel
 from geojson_projects.exceptions import AlreadyExistError, NotFoundError
@@ -16,9 +16,9 @@ def not_found(function: TFunc) -> TFunc:
     """Decorator for repositories' methods which access data"""
 
     @wraps(function)
-    def inner(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    async def inner(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         try:
-            result = function(*args, **kwargs)
+            result = await function(*args, **kwargs)
         except NoResultFound:
             raise NotFoundError from None
 
@@ -31,9 +31,9 @@ def already_exist(function: TFunc) -> TFunc:
     """Decorator for repositories' methods which inserts/updates data"""
 
     @wraps(function)
-    def inner(*args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+    async def inner(*args: Any, **kwargs: Any) -> None:  # noqa: ANN401
         try:
-            function(*args, **kwargs)
+            await function(*args, **kwargs)
         except IntegrityError:
             raise AlreadyExistError from None
 
@@ -41,34 +41,36 @@ def already_exist(function: TFunc) -> TFunc:
 
 
 class BaseSqlAlchemyRepository(Generic[TModel], abc.ABC):
-    def __init__(self, session: Session) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    def get_all(self) -> list[TModel]:
+    async def get_all(self) -> list[TModel]:
         statement = select(self._model_class)
-        instances = self.session.execute(statement).scalars().all()
+        result = await self.session.execute(statement)
+        instances = result.scalars().all()
         return cast(list[TModel], instances)
 
     @not_found
-    def get_by_pk(self, instance_pk: uuid.UUID) -> TModel:
+    async def get_by_pk(self, instance_pk: uuid.UUID) -> TModel:
         statement = select(self._model_class).where(self._model_class.pk == instance_pk)
-        instance = self.session.execute(statement).scalars().one()
+        result = await self.session.execute(statement)
+        instance = result.scalars().one()
         return cast(TModel, instance)
 
     @already_exist
-    def add(self, instance: TModel) -> None:
+    async def add(self, instance: TModel) -> None:
         self.session.add(instance)
-        self.session.flush()
+        await self.session.flush()
 
-    def delete(self, instance: TModel) -> None:
-        self.session.delete(instance)
-        self.session.flush()
+    async def delete(self, instance: TModel) -> None:
+        await self.session.delete(instance)
+        await self.session.flush()
 
-    def update(self, instance_pk: uuid.UUID, instance_data: dict[str, str]) -> None:
-        instance = self.get_by_pk(instance_pk)
+    async def update(self, instance_pk: uuid.UUID, instance_data: dict[str, str]) -> None:
+        instance = await self.get_by_pk(instance_pk)
         for k, v in instance_data.items():
             setattr(instance, k, v)
-        self.add(instance)
+        await self.add(instance)
 
     @cached_property
     def _model_class(self) -> type[TModel]:
