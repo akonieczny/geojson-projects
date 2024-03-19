@@ -78,6 +78,7 @@ def delete_by_pk(pk: UUID, session: Annotated[Session, Depends(get_db_session)])
 
     instance = project_repository.get_by_pk(pk)
     project_repository.delete(instance)
+    session.commit()
 
 
 @router.put("/{pk}")
